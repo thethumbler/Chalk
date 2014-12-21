@@ -1,0 +1,15 @@
+/* 
+  This file demonstrates I/O handeling in Chalk 
+  Currently only I/O via stdin, stdout and files are supported 
+  using read() and print() functions
+ */
+ 
+print("Enter something : ")
+x = read()
+print("You entered '" + x + "'\n")
+write( "test_out" , "This file is created and written in by io.chk\n" + x )
+
+//We can also open files using open()
+
+file = open("test_in")
+print(file + "\n")

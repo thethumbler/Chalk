@@ -1,0 +1,9 @@
+function fact(n)
+    if n 
+        return n * fact(n-1)
+    end
+    return 1
+end
+
+print(sin(2))
+print("\n")
