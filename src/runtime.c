@@ -281,9 +281,10 @@ void exec(char * prog , element_table_t * Str_tbl_in)
 	int running = 1;
 	int c = 0;
 	*/
-
+	int c = 0;
 	while(running)
 	{
+		c++;
 		cur_chunk = calloc(10,sizeof(char));
 
 		empty(cur_chunk,0xA);
@@ -298,7 +299,6 @@ void exec(char * prog , element_table_t * Str_tbl_in)
 		tmp.type = cur_chunk[1];
 		memcpy(&tmp.val , &cur_chunk[2] , (int)sizeof(var_union));
 		val = (var_union*)&cur_chunk[2];
-
 
 		//printf("OP = %d\n" , op );
 		vm_op[op]();
@@ -372,12 +372,12 @@ int launch_exec(char * src)
 	return 0;
 }
 
-
+/*
 void build_strings_element_table(table_t * strings)
 {
 	/*
 	 * Building Strings table
-	 */
+	 
 	 RT_Strings = malloc(sizeof(element_table_t));
 	 RT_Strings->name = "RT_Strings";
 	 RT_Strings->count = strings->count;
@@ -389,14 +389,15 @@ void build_strings_element_table(table_t * strings)
 	 }
 	 	
 }
+*/
 
-void launch(char * src , int globals_count , table_t * strings , table_t * globals /* Optional debug data*/ )
+void launch(char * src , int globals_count , element_table_t * strings , table_t * globals /* Optional debug data*/ )
 {
 	L_Head = malloc(sizeof(Local_tables_t));
 	RT_Global = malloc(sizeof(element_table_t));
 	RT_Global->name = "RT_Global";
 	RT_Global->count = globals_count;
 	RT_Global->var = calloc( globals_count , sizeof(element_var_t));
-	build_strings_element_table(strings);
-	exec(src , RT_Strings);
+	//build_strings_element_table(strings);
+	exec(src , strings);
 }

@@ -27,8 +27,8 @@ char * out_error()
 
 int main(int argc , char * argv[])
 {
-	repl();
-	exit(0);
+	//repl();
+	//exit(0);
 
 	//printf("int = %ld , long = %ld , double = %ld , long double = %ld\n" , sizeof(int) , sizeof(long) , sizeof(double) , sizeof(long double) );
 

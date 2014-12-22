@@ -896,18 +896,19 @@ typedef struct
 {
     char * src ;
     int globals_count ; 
-    table_t * strings ;
+    element_table_t * strings ;
     table_t * globals ; /* Optional debug data*/
     int inst_count;
 }parse_return;
 
 parse_return parse_file(char * filename)
 {
+    
     input_file_name = filename;
     src = open_file(filename);
     init_int();
     //while(pos < strlen(src))
-        parse(src);
+        parse();
     _asm(OP_HALT , new_var(NULL_T , (var_union)(0)));
     parse_return ret = 
     {
@@ -918,4 +919,5 @@ parse_return parse_file(char * filename)
         .inst_count = inst_count
     };
     return ret;
+
 }

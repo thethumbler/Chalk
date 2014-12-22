@@ -6,6 +6,8 @@
 
 typedef struct table_struct table_t;
 typedef struct element_table_struct element_table_t;
+typedef struct var_struct var_t;
+typedef struct element_var_struct element_var_t;
 
 typedef enum 
 {
@@ -22,15 +24,17 @@ typedef union
 	double 	double_t;
 	char 	* char_t;
 	table_t * table;
+	var_t * var_ptr;
+	element_var_t * evar_ptr;
 }var_union;
 
-typedef struct 
+typedef struct element_var_struct
 {
 	data_t type;
 	var_union val;
 }element_var_t;
 
-typedef struct 
+typedef struct var_struct
 {
 	char * name;
 	element_var_t var;

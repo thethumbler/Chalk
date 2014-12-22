@@ -4,7 +4,7 @@
 
 table_t * Global;
 table_t * Local;
-table_t * Strings;
+element_table_t * Strings;
 
 int RET_STACK[MAX_STACK];
 int RET_STACK_COUNTER = 0;
@@ -12,11 +12,9 @@ int RET_STACK_COUNTER = 0;
 int init_int()
 {
 	Global = init_table("Global");
-	Global->var = malloc(sizeof(var_t));
-	add_to_table( Global , new_var_t( "^_^" , NULL ));	//Dummy varialbe
-	Strings = init_table("String");
-	Strings->var = malloc(sizeof(var_t));
-	add_to_table( Strings , new_var_t( "^_^" , NULL ));	//Dummy string
+	//add_to_table( Global , new_var_t( "^_^" , NULL ));	//Dummy varialbe
+	Strings = init_element_table("String");
+	//add_to_table( Strings , new_var_t( "^_^" , NULL ));	//Dummy string
 	return 0;
 }
 void new_local_table()

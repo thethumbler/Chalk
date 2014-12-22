@@ -1,1 +1,7 @@
-print("Hello, World!\n")
+table = {
+	"name" = "Mohamed" ,
+	"age" = 18
+}
+print(table["name"] + " ")
+print(table["age"])
+print("\n")

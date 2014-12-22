@@ -106,7 +106,7 @@ typedef struct
 	char * str;
 }str_table_t;
 
-str_table_t * encode_str_table(table_t * Strings)
+str_table_t * encode_str_table(element_table_t * Strings)
 {
 	str_table_t * str_table = malloc(sizeof(str_table_t));
 	int * slots = calloc(Strings->count,sizeof(int));
@@ -115,16 +115,16 @@ str_table_t * encode_str_table(table_t * Strings)
 	int i;
 	for(i=0;i<Strings->count;i++)
 	{
-		cur_offset += strlen(Strings->var[i].var.val.char_t);
+		cur_offset += strlen(Strings->var[i].val.char_t);
 		slots[i+1] = cur_offset;
 	}
 	char * str = calloc(cur_offset+1 , sizeof(char));
 	int si , s , sn = 0;
 	for(si=0;si<i;si++)
 	{
-		for(s=0;s<strlen(Strings->var[si].var.val.char_t);s++)
+		for(s=0;s<strlen(Strings->var[si].val.char_t);s++)
 		{
-			str[sn++] = Strings->var[si].var.val.char_t[s];
+			str[sn++] = Strings->var[si].val.char_t[s];
 		}
 	}
 	str[cur_offset] = '\0';

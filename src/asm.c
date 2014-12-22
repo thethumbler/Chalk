@@ -20,12 +20,11 @@ void _asm(op_t op , element_var_t * arg)	/* using _asm because asm is already re
 	switch(op)
 	{
 		case  OP_SGV:	arg->val.int_t = add_to_table(Global , new_var_t( arg->val.char_t , NULL )); break;
-		case  OP_LGV:	dump_table(Global); arg->val.int_t = get_index_in_table(Global , arg->val.char_t); break;
+		case  OP_LGV:	arg->val.int_t = get_index_in_table(Global , arg->val.char_t); break;
 		case  OP_SLV:	arg->val.int_t = add_to_table(Local , new_var_t( arg->val.char_t , NULL )); break;
 		case  OP_LLV:	arg->val.int_t = get_index_in_table(Local , arg->val.char_t); break;
-		case  OP_LSTR:	if(!counting)arg->val.int_t = add_to_table(Strings , new_var_t( NULL , arg )); break;
+		case  OP_LSTR:	arg->val.int_t = add_to_element_table(Strings , arg); break;
 	}
-	if(counting)return;
 
 	if(arg != NULL) 
 	{
