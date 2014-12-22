@@ -1,7 +1,7 @@
 table = {
-	"name" = "Mohamed" ,
-	"age" = 18
+	name = "Mohamed" ,
+	age = 18
 }
-print(table["name"] + " ")
-print(table["age"])
-print("\n")
+print( table[name] + " ")
+print( table[age] ) 
+print( "\n" )

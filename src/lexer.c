@@ -26,6 +26,7 @@ int start_pos, pos = 0 , pos_y = 1 ,cur_line_start_pos = 0;
 
 int get_token_value()
 {
+	//printf("src[%d]:%c\n" , pos , src[pos] );
     char * str = src; 
     if (str[pos] == '\0')  return LEXEOF; /* Returns end of file */
    	if(str[pos] == ' ' ||str[pos] == '\t')
@@ -38,6 +39,7 @@ int get_token_value()
     {
         pos += 2;
         while( str[pos] != '\n' && str[pos++] != '\0');    // Ignoring line comments
+        return get_token_value();
     }
 
     if(!strncmp( &str[pos] , "/*" , 2)) 
@@ -96,6 +98,7 @@ int get_token_value()
     {
         while(is_valid_id_name(str[pos]))pos++; /* Skipps characters , digits and underscores */
         lextext = strndup( &str[start_pos] , pos-start_pos );
+        if(in_table) return ID;
         int len = strlen(lextext);
         /* Checking if it's a keyword */
         if  	(!strcmp(lextext, "if"         ) && len == 2)
@@ -176,6 +179,7 @@ int lex()
     token.pre = token.cur;
     token.cur = token.nxt;
     token.nxt = get_token();
+   	//printf("cur = %s \n" , tokentostring(token.cur) );
 }
 
 #endif

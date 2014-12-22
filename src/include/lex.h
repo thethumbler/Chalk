@@ -44,9 +44,8 @@ int is_valid_id_name(char c) {return (is_alpha(c)||c=='_'||is_digit(c))?1:0;}
 char * lextext;
 char * pre_id , *id;
 int level = 0 , max_lvl = 0 , wh_lvl = 0;
-int in_func , in_cond , tmp_inst_count;
+int in_func , in_cond , tmp_inst_count , in_table = 0;
 int debug = 0;
-
 
 void empty(char * buf , int size)
 {
@@ -151,5 +150,7 @@ typedef struct
 }token_t;
 
 token_t token;
+
+char * tokentostring(tok token);
 
 #endif

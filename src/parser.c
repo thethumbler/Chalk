@@ -104,9 +104,11 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
             }
             else if(token.nxt.token == '[') //requesting table element
             {
+                in_table = 1;
                 lex();
+                in_table = 0;
                 char * element_name;
-                if(token.nxt.token == STRING_VAL)
+                if(token.nxt.token == ID)
                 {
                     lex();
                     element_name = strdup(lextext);
@@ -344,6 +346,7 @@ parse_param:
 
 int parse_table_elements()
 {
+    in_table = 1;
     if(token.nxt.token == '}')  return 0;   /* Empty table */
     while(token.nxt.token != '}')
     {
@@ -352,7 +355,7 @@ int parse_table_elements()
             lex();
             continue;
         }
-        if(token.nxt.token == STRING_VAL)
+        if(token.nxt.token == ID)
         {
             char * element_name = strdup(lextext);
             lex();
@@ -418,6 +421,7 @@ int parse_statment()
                     if(debug)fprintf( stderr , "CT\t%s\n" , assign_id ); 
                     _asm(OP_CT , NULL);
                     parse_table_elements();
+                    in_table = 0;
                     if(token.nxt.token != '}')
                     {
                         parse_error();
