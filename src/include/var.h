@@ -68,7 +68,7 @@ void print_var(var_t var)
 }
 element_var_t * new_var(data_t type , var_union val)
 {
-	element_var_t * var = calloc(1,sizeof(element_var_t));
+	element_var_t * var = _calloc(1,sizeof(element_var_t));
 	var->type = type;
 	switch(type)
 	{
@@ -82,7 +82,7 @@ element_var_t * new_var(data_t type , var_union val)
 
 var_t * new_var_t(char * name , element_var_t * e_var)
 {
-	var_t * var = calloc(1,sizeof(var_t));
+	var_t * var = _calloc(1,sizeof(var_t));
 	var->name = name;
 	if(e_var)var->var = *e_var;
 	return var;

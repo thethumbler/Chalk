@@ -69,7 +69,7 @@ void build_strings_table()
 	 for(i=0;i<*strings_count;i++)
 	 {
 	 	int str_size = slots[i] - (i?slots[i-1]:0);
-	 	char * str = calloc(str_size+1,sizeof(char));	// Including the Null terminator 
+	 	char * str = _calloc(str_size+1,sizeof(char));	// Including the Null terminator 
 	 	empty(str , str_size + 1);
 	 	char * str_pos = input + 12 + *code_size + (*strings_count+1) * sizeof(int) + slots[i] - str_size;
 	 	memcpy( str , str_pos , str_size );

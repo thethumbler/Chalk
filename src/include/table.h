@@ -26,7 +26,9 @@
  * To get element in place n (non-negative integer) .. this algorithem is performed:
  * 		starting with cur = the position of first element in the table
  * 		and counter = n/BASIC_BLOCK_SIZE (integer division)
- * 			E(n) = while(counter--) cur = &(*(cur + BASIC_BLOCK_SIZE)->var.val.var_ptr); + n%BASIC_BLOCK_SIZE
+ * 		while(counter--) cur = &(*(cur + BASIC_BLOCK_SIZE)->var.val.var_ptr); 
+		cur += i % BASIC_BLOCK_SIZE;
+		now E(n) = cur
  */
 
 #define BASIC_BLOCK_SIZE	32
@@ -45,7 +47,7 @@ element_table_t * init_element_table(char * name)
 	element_table_t * tmp = malloc(sizeof(element_table_t));
 	tmp->name = name;
 	tmp->count = 0;
-	tmp->var = calloc( BASIC_BLOCK_SIZE + 1 , sizeof(element_var_t));
+	tmp->var = _calloc( BASIC_BLOCK_SIZE + 1 , sizeof(element_var_t));
 	return tmp;
 }
 
@@ -103,7 +105,7 @@ int add_to_table(table_t * table , var_t * var )
 	if( i && !(i % BASIC_BLOCK_SIZE) ) 
 	{
 		while(--counter) cur = &(*(cur + BASIC_BLOCK_SIZE)->var.val.var_ptr); 
-		(cur + BASIC_BLOCK_SIZE)->var.val.var_ptr = (var_t*)calloc( BASIC_BLOCK_SIZE + 1 , sizeof(var_t)); 
+		(cur + BASIC_BLOCK_SIZE)->var.val.var_ptr = (var_t*)_calloc( BASIC_BLOCK_SIZE + 1 , sizeof(var_t)); 
 		counter = i / BASIC_BLOCK_SIZE;
 		cur = table->var;
 	}
@@ -136,7 +138,7 @@ int add_to_element_table(element_table_t * table , element_var_t * var )
 	if( i && !(i % BASIC_BLOCK_SIZE) ) 
 	{
 		while(--counter) cur = &(*(cur + BASIC_BLOCK_SIZE)->val.evar_ptr); 
-		(cur + BASIC_BLOCK_SIZE)->val.evar_ptr = (element_var_t*)calloc( BASIC_BLOCK_SIZE + 1 , sizeof(element_var_t)); 
+		(cur + BASIC_BLOCK_SIZE)->val.evar_ptr = (element_var_t*)_calloc( BASIC_BLOCK_SIZE + 1 , sizeof(element_var_t)); 
 		counter = i / BASIC_BLOCK_SIZE;
 		cur = table->var;
 	}
@@ -191,7 +193,7 @@ var_t get_from_table(table_t * table , char * name)
 			return *cur;
 	}
 	fprintf(stderr, "Error : Name %s is not defined\n", name );
-	exit(0);
+	chalk_exit();
 }
 
 void dump_table(table_t * table)

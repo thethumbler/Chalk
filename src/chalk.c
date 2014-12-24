@@ -1,3 +1,4 @@
+#include "include/system.h"
 #include "parser.c"
 #include "runtime.c"
 #include "repl.c"
@@ -11,12 +12,12 @@ void print_message () {
   	"  -o [file]  specify output file (default chalk.out)\n"
   	"  -v       	print version information\n" 
 	);
-  	exit(0);
+  	chalk_exit();
 }
 
 void print_version (void) {
   	printf("%s\n" , CHALK_VERSION);	/* Notice that the version is a string and not just a number */
-	exit(0);
+	chalk_exit();
 }
 
 char * out_error()
@@ -28,7 +29,7 @@ char * out_error()
 int main(int argc , char * argv[])
 {
 	//repl();
-	//exit(0);
+	//chalk_exit();
 
 	//printf("int = %ld , long = %ld , double = %ld , long double = %ld\n" , sizeof(int) , sizeof(long) , sizeof(double) , sizeof(long double) );
 
@@ -65,7 +66,7 @@ int main(int argc , char * argv[])
     	if(check_header(src))
     	{
     		launch_exec(open_file(input));
-    		exit(0);
+    		chalk_exit();
     	}
     }
 
@@ -85,9 +86,10 @@ int main(int argc , char * argv[])
     	int file_size = ftell(out);
     	fwrite( &file_size , sizeof(int) , 1 , out);
     	fclose(out);
-    	exit(0);
+    	chalk_exit();
     }
 
     launch(executable.src , executable.globals_count , executable.strings , executable.globals);
+    chalk_exit();
     return 0;
 }

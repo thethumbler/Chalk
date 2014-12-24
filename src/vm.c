@@ -20,7 +20,7 @@ int init_int()
 void new_local_table()
 {
 	Local = init_table("Local");
-	Local->var = malloc(sizeof(var_t));
+	Local->var = _malloc(sizeof(var_t));
 	add_to_table(Local , new_var_t( "^" , NULL ));	//Dummy variable .. impossible to be declared by the user
 }
 

@@ -19,9 +19,9 @@ void api_print(void)
 
 void api_read(void)
 {
-	char * str = calloc(MAX_READ_BUFFER , sizeof(char));
+	char * str = _calloc(MAX_READ_BUFFER , sizeof(char));
 	fgets(str , MAX_READ_BUFFER , stdin );
-	char * dynamic_str = calloc(strlen(str) , sizeof(char));
+	char * dynamic_str = _calloc(strlen(str) , sizeof(char));
 	memcpy(dynamic_str , str , strlen(str) - 1 );
 	free(str);
 	op_push(*new_var( STRING , (var_union)(dynamic_str)));

@@ -7,7 +7,7 @@ int parse_func()
     {
         parse_error();
         fprintf(stderr , "Error : expected function name after token 'function'\n");
-        exit(0);
+        chalk_exit();
     }
     lex();
     char * id = token.cur.text;
@@ -22,7 +22,7 @@ int parse_func()
     {
         parse_error();
         fprintf(stderr , "Error : error expected '(' before %s\n" , tokentostring(token.nxt));
-        exit(0);
+        chalk_exit();
     }
     lex();
     while(token.cur.token != ')') 
@@ -42,7 +42,7 @@ int parse_func()
         }
         parse_error();
         fprintf(stderr , "Error : error expected ')' before %s\n" , tokentostring(token.cur));
-        exit(0);
+        chalk_exit();
     }
     lex();
     if(debug)fprintf( stderr , "*%s:%d\n" , id , parm_count);
@@ -73,7 +73,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
             {
                 parse_error();
                 fprintf(stderr, "error trying to perform mathematical operation on string literal\n");
-                exit(0);
+                chalk_exit();
             }
             return 0;
 
@@ -94,7 +94,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                 {
                     parse_error();
                     fprintf( stderr , "function %s is not defined\n" , id );
-                    exit(0);
+                    chalk_exit();
                 }
                 int fun_loc = func_list_loc[get_func_index(id)];
                 parse_call_parameters();    /* parse_expr(); */
@@ -108,7 +108,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                 lex();
                 in_table = 0;
                 char * element_name;
-                if(token.nxt.token == ID)
+                if( token.nxt.token == ID || token.nxt.token == STRING_VAL || token.nxt.token == INT_VAL )
                 {
                     lex();
                     element_name = strdup(lextext);
@@ -119,7 +119,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                         {
                             parse_error();
                             fprintf( stderr , "name %s is not declared in this function or in the main chunk\n" , id );
-                            exit(0);
+                            chalk_exit();
                         }
                         if(debug)fprintf( stderr , "LLV\t%s\n" , id );
                         _asm(OP_LLV , new_var( STRING , (var_union)strdup(id)));
@@ -130,7 +130,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                         {   
                             parse_error();
                             fprintf( stderr , "name %s is not declared\n" , id );
-                            exit(0);
+                            chalk_exit();
                         }
                         if(debug)fprintf( stderr , "LGV\t%s\n" , id );
                         _asm(OP_LGV , new_var( STRING , (var_union)id));
@@ -145,7 +145,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                 }
                 parse_error();
                 fprintf(stderr, "Tables can be indexed only using a string\n");
-                exit(0);
+                chalk_exit();
                 //parse_expr();
             }
             else     //Normal identifier
@@ -157,7 +157,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                     {
                         parse_error();
                         fprintf( stderr , "name %s is not declared in this function or in the main chunk\n" , id );
-                        exit(0);
+                        chalk_exit();
                     }
                     if(debug)fprintf( stderr , "LLV\t%s\n" , id );
                     _asm(OP_LLV , new_var( STRING , (var_union)strdup(id)));
@@ -168,7 +168,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                     {
                         parse_error();
                         fprintf( stderr , "name %s is not declared\n" , id );
-                        exit(0);
+                        chalk_exit();
                     }
                     if(debug)fprintf( stderr , "LGV\t%s\n" , id );
                     _asm(OP_LGV , new_var( STRING , (var_union)id));
@@ -198,7 +198,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
             {
                 parse_error();
                 fprintf(stderr, "expected ')' before %s\n" , tokentostring(token.nxt) );
-                exit(0);
+                chalk_exit();
             }
             lex();
             if(is_in(token.nxt.token,"*/")) parse_term();
@@ -217,12 +217,25 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
 
     parse_error();
     printf("expected expression before %s\n" , tokentostring(token.cur) );
-    exit(0);
+    chalk_exit();
     
 }
 
 int parse_expr()
 {
+    static int check_uminus = 1;
+    if(check_uminus)
+        if(token.nxt.token == '-')  //Found unary minus
+        {
+            check_uminus = 0;
+            if(debug)fprintf( stderr , "_UMINUS\n" );
+            _asm(OP_PUSH , new_var(INT , (var_union)(0)));
+            lex();
+            parse_term();
+            _asm(OP_SUB , NULL);
+            if(debug)fprintf( stderr , "UMINUS\n" );
+            goto parse_expr_only;
+        }
     parse_term();
 
 parse_expr_only:
@@ -355,7 +368,7 @@ int parse_table_elements()
             lex();
             continue;
         }
-        if(token.nxt.token == ID)
+        if( token.nxt.token == ID || token.nxt.token == STRING_VAL || token.nxt.token == INT_VAL )
         {
             char * element_name = strdup(lextext);
             lex();
@@ -392,7 +405,7 @@ int parse_table_elements()
     _error:
     parse_error();
     printf("Error declaring table\n");
-    exit(0);
+    chalk_exit();
 }
 
 int parse_statment()
@@ -426,7 +439,7 @@ int parse_statment()
                     {
                         parse_error();
                         fprintf(stderr, "error expected '}' before %s\n" , tokentostring(token.nxt) );
-                        exit(0);
+                        chalk_exit();
                     }
                     lex();
                     if(debug)fprintf( stderr , "LT\t%s\n" , assign_id ); 
@@ -461,7 +474,7 @@ int parse_statment()
                 {
                     parse_error();
                     fprintf( stderr , "function %s is not defined\n" , id );
-                    exit(0);
+                    chalk_exit();
                 }
                 int fun_loc = func_list_loc[get_func_index(id)];
                 parse_call_parameters();    /* parse_expr(); */
@@ -478,7 +491,7 @@ int parse_statment()
             {
                 parse_error();
                 fprintf( stderr , "expected 'then' before %s\n" , tokentostring(token.nxt) );
-                exit(0);
+                chalk_exit();
             } 
             lex();
             in_cond = 0;
@@ -494,7 +507,7 @@ int parse_statment()
             {
                 parse_error();
                 fprintf( stderr , "expected 'end' before %s\n" , tokentostring(token.cur) );
-                exit(0);
+                chalk_exit();
             } 
             //counting = tmp_counting;
             //debug = tmp_debug;
@@ -514,7 +527,7 @@ int parse_statment()
             {
                 parse_error();
                 fprintf( stderr , "expected 'do' before %s\n" , tokentostring(token.nxt) );
-                exit(0);
+                chalk_exit();
             } 
             lex();
             int tdum = chunk_buf_pos;
@@ -532,7 +545,7 @@ int parse_statment()
             {
                 parse_error();
                 fprintf( stderr , "expected 'end' before %s\n" , tokentostring(token.cur) );
-                exit(0);
+                chalk_exit();
             }
             int while_block_size = (chunk_buf_pos - dummy)/10 + 1;
             if(debug)fprintf( stderr , "JMP\t%d\n" , -while_block_size);
@@ -564,7 +577,7 @@ int parse_statment()
             {
                 parse_error();
                 fprintf( stderr , "expected 'end' before %s\n" , tokentostring(token.cur) );
-                exit(0);
+                chalk_exit();
             }
             int func_size = (chunk_buf_pos - dummy)/10;
             memcpy( &chunk_buf[dummy+2] , &func_size , sizeof(int) );
@@ -585,7 +598,7 @@ int parse_statment()
     }
     parse_error();
     fprintf( stderr , "expected statment before %s token\n" , tokentostring(token.cur) );
-    exit(0);
+    chalk_exit();
 }
 
 int parse_prgrm()
@@ -701,7 +714,7 @@ int parse_tmp()
                                 {
                                         parse_error();
                                         fprintf( stderr , "function %s is not defined\n" , id );
-                                        exit(0);
+                                        chalk_exit();
                                 }
                                 int fun_loc = func_list_loc[get_func_index(id)];
                                 while(parse(src) != ')');
@@ -719,7 +732,7 @@ int parse_tmp()
                                     {
                                         parse_error();
                                         fprintf( stderr , "name %s is not declared in this function or in the main chunk\n" , id );
-                                        exit(0);
+                                        chalk_exit();
                                     }
                                 }
                                 else 
@@ -728,7 +741,7 @@ int parse_tmp()
                                     {
                                         parse_error();
                                         fprintf( stderr , "name %s is not declared\n" , id );
-                                        exit(0);
+                                        chalk_exit();
                                     }
                                     if(debug)fprintf( stderr , "LGV\t%s\n" , id );
                                     _asm(OP_LGV , new_var( STRING , (var_union)id));
@@ -753,7 +766,7 @@ int parse_tmp()
                                     cur_line_start_pos = cur_line;
                                     parse_error();
                                     fprintf( stderr , "expected 'then' before end of line\n" );
-                                    exit(0);
+                                    chalk_exit();
                                 }
                                 a = parse();
                             } 
@@ -852,7 +865,7 @@ int main(int argc , char * argv[])
     if(argc < 2 || argc > 4) 
     {
         fprintf( stderr , "usage : %s [-d debug_level] filename\n" , argv[0] );
-        exit(0);
+        chalk_exit();
     }
     int c = 0;
     while(++c < argc)

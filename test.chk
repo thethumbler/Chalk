@@ -1,7 +1,11 @@
+
+print("A"  + 5 + 6 + "B\n")
+
 table = {
-	name = "Mohamed" ,
-	age = 18
+	1 = "This is element one!" ,
+	name = "Mohamed"	,
+	"age" = 18
 }
-print( table[name] + " ")
-print( table[age] ) 
-print( "\n" )
+
+x = open("test.chk")
+print(x + "\n")
