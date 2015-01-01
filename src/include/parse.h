@@ -24,14 +24,14 @@ char * tokentostring(tok token)
 	char * ret;
 	switch(token.token)
 	{
-		case INT_VAL: 	ret = _calloc(strlen(lextext) + strlen("number "),sizeof(char));
+		case INT_VAL: 	ret = calloc(strlen(lextext) + strlen("number "),sizeof(char));
 					  	strcpy(ret , "number ");
 					  	return strcat( ret , lextext );
 		case STRING_VAL: return "string literal";
 		case 	'\n': 	return "end of line";
 		default   	: 	if(token.token <= 255) 
 						{
-							ret = _calloc(2 , 1);
+							ret = calloc(2 , 1);
 							ret[0] = (char)token.token;
 							ret[1] = '\0';
 							return ret;

@@ -47,7 +47,7 @@ element_table_t * init_element_table(char * name)
 	element_table_t * tmp = malloc(sizeof(element_table_t));
 	tmp->name = name;
 	tmp->count = 0;
-	tmp->var = _calloc( BASIC_BLOCK_SIZE + 1 , sizeof(element_var_t));
+	tmp->var = calloc( BASIC_BLOCK_SIZE + 1 , sizeof(element_var_t));
 	return tmp;
 }
 
@@ -105,7 +105,7 @@ int add_to_table(table_t * table , var_t * var )
 	if( i && !(i % BASIC_BLOCK_SIZE) ) 
 	{
 		while(--counter) cur = &(*(cur + BASIC_BLOCK_SIZE)->var.val.var_ptr); 
-		(cur + BASIC_BLOCK_SIZE)->var.val.var_ptr = (var_t*)_calloc( BASIC_BLOCK_SIZE + 1 , sizeof(var_t)); 
+		(cur + BASIC_BLOCK_SIZE)->var.val.var_ptr = (var_t*)calloc( BASIC_BLOCK_SIZE + 1 , sizeof(var_t)); 
 		counter = i / BASIC_BLOCK_SIZE;
 		cur = table->var;
 	}
@@ -138,7 +138,7 @@ int add_to_element_table(element_table_t * table , element_var_t * var )
 	if( i && !(i % BASIC_BLOCK_SIZE) ) 
 	{
 		while(--counter) cur = &(*(cur + BASIC_BLOCK_SIZE)->val.evar_ptr); 
-		(cur + BASIC_BLOCK_SIZE)->val.evar_ptr = (element_var_t*)_calloc( BASIC_BLOCK_SIZE + 1 , sizeof(element_var_t)); 
+		(cur + BASIC_BLOCK_SIZE)->val.evar_ptr = (element_var_t*)calloc( BASIC_BLOCK_SIZE + 1 , sizeof(element_var_t)); 
 		counter = i / BASIC_BLOCK_SIZE;
 		cur = table->var;
 	}

@@ -45,33 +45,16 @@ char * lextext;
 char * pre_id , *id;
 int level = 0 , max_lvl = 0 , wh_lvl = 0;
 int in_func , in_cond , tmp_inst_count , in_table = 0;
-int debug = 0;
+
 
 void empty(char * buf , int size)
 {
 	while(buf[--size] = 0);
 }
 
-char * open_file(char * filename)
-{
-    FILE * file = fopen( filename , "r");
-    if(!file)
-	{
-		fprintf( stderr , "error : can't open file '%s' , file was not found\n" , filename );
-		chalk_exit();
-	}
-    fseek(file , 0L , SEEK_END );
-    int size = ftell(file);
-    fseek(file , 0L , SEEK_SET);
-    char * buf = _calloc(size , sizeof(char));
-    fread(buf , size , 1 , file);
-    fclose(file);
-    return buf;
-}
-
 char * fstrndup(char * src , int size)
 {
-	char * ret = _calloc(size+1,sizeof(char));
+	char * ret = calloc(size+1,sizeof(char));
 	int i , j=0;
 	for(i=0;i<size;i++)
 	{
@@ -107,8 +90,8 @@ typedef struct
 
 str_table_t * encode_str_table(element_table_t * Strings)
 {
-	str_table_t * str_table = _malloc(sizeof(str_table_t));
-	int * slots = _calloc(Strings->count,sizeof(int));
+	str_table_t * str_table = malloc(sizeof(str_table_t));
+	int * slots = calloc(Strings->count,sizeof(int));
 	slots[0] = Strings->count;
 	int cur_offset = 0;
 	int i;
@@ -117,7 +100,7 @@ str_table_t * encode_str_table(element_table_t * Strings)
 		cur_offset += strlen(Strings->var[i].val.char_t);
 		slots[i+1] = cur_offset;
 	}
-	char * str = _calloc(cur_offset+1 , sizeof(char));
+	char * str = calloc(cur_offset+1 , sizeof(char));
 	int si , s , sn = 0;
 	for(si=0;si<i;si++)
 	{

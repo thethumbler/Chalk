@@ -1,5 +1,16 @@
 /* Read evaluate print loop .. interactive shell */
 
+#define MAX_GLOBALS 4096
+
+void init_repl()
+{
+	L_Head = malloc(sizeof(Local_tables_t));
+	RT_Global = malloc(sizeof(element_table_t));
+	RT_Global->name = "RT_Global";
+	RT_Global->count = MAX_GLOBALS;
+	RT_Global->var = calloc( MAX_GLOBALS , sizeof(element_var_t));
+}
+
 int eval(char * str)
 {
 	src = str;
@@ -8,11 +19,12 @@ int eval(char * str)
     _asm(OP_HALT , NULL);
     running = 1;
     pc = 0;
-    launch(chunk_buf , Global->count , Strings , Global);
+    exec(chunk_buf , Strings);
 }
 
 int repl(void)
 {
+	init_repl();
 	init_int();
 	while(1)
 	{
@@ -26,6 +38,7 @@ int repl(void)
 		free(str);
 		eval(dynamic_str);
 		printf("\n");
-		//eval("print(1)\nprint(2)");
+		//eval("x=1\nprint(x)");
 	}
+	chalk_exit();
 }

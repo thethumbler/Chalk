@@ -6,7 +6,7 @@
 
 char * vartostr(element_var_t var)
 {
-	char * str = _calloc(64,1);	//An int or floating point number can't go over this size 
+	char * str = calloc(64,1);	//An int or floating point number can't go over this size 
 	switch(var.type)
 	{
 		case INT:
@@ -28,7 +28,7 @@ char * add_string(element_var_t var1 , element_var_t var2)
 	char * str2 = vartostr(var2);
 	int64_t len1 = strlen(str1);
 	int64_t len2 = strlen(str2);
-	char * tmp = _malloc(len1+len2+1);
+	char * tmp = malloc(len1+len2+1);
 	int64_t i,j=0;
 	for(i=0;i<len1;i++)
 	tmp[j++] = str1[i] ;

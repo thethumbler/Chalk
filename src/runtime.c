@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "include/system.h"
 #include "include/table.h"
 #include "include/var.h"
 #include "include/cmp.h"
@@ -69,7 +70,7 @@ void build_strings_table()
 	 for(i=0;i<*strings_count;i++)
 	 {
 	 	int str_size = slots[i] - (i?slots[i-1]:0);
-	 	char * str = _calloc(str_size+1,sizeof(char));	// Including the Null terminator 
+	 	char * str = calloc(str_size+1,sizeof(char));	// Including the Null terminator 
 	 	empty(str , str_size + 1);
 	 	char * str_pos = input + 12 + *code_size + (*strings_count+1) * sizeof(int) + slots[i] - str_size;
 	 	memcpy( str , str_pos , str_size );
@@ -234,6 +235,11 @@ void vm_op_ste(void)
 	var->name = op_pop()->val.char_t;
 	var->var = *op_pop();
 	add_to_table(cur_table , var);
+}
+
+void vm_set_call(int api_fun_id)	//used for native code generation
+{
+	tmp.val.int_t = api_fun_id;
 }
 
 vm_op_func vm_op[] = 
@@ -401,3 +407,16 @@ void launch(char * src , int globals_count , element_table_t * strings , table_t
 	//build_strings_element_table(strings);
 	exec(src , strings);
 }
+
+
+int init_runtime(/*int a_code_size , int a_globals_count , int strings_count)*/)
+{
+	RT_Global = malloc(sizeof(element_table_t));
+	RT_Global->name = "RT_Global";
+	//RT_Global->count = *globals_count;
+	//RT_Global->var = calloc( *globals_count , sizeof(element_var_t));
+	L_Head = malloc(sizeof(Local_tables_t));
+	//build_strings_table();
+	return 0;
+}
+
