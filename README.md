@@ -12,7 +12,7 @@ CHALK
 
 Language is still in designing phase ... that means the way you write in some code may change in the feautre 
 
-Features :-
+######Features :-
 ```
 	Not really much because as I said it's still under heavy development but to count a few
 	- Lua like syntax (I like lua and it's syntax, and there's no reason to hate it =D)
