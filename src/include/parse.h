@@ -4,7 +4,11 @@ char * input_file_name;
 
 void parse_error()
 {
-	fprintf(stderr, "error in file %s\n" , input_file_name );
+	PARSE_ERROR_FLAG = 1;
+	if(!IN_REPL)
+		fprintf(stderr, "error in file %s\n" , input_file_name );
+	else 
+		fprintf(stderr, "error in file <stdin> : interactive session \n");
 	if(in_func)
 	{
 		fprintf( stderr , "in function %s , " , func_list_name[cur_func_index-1] );

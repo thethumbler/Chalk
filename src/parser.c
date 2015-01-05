@@ -3,7 +3,7 @@
 int parse_func()
 {
     int parm_count = 0;
-    if(token.nxt.token != ID)    
+    if(token.nxt.token != ID)
     {
         parse_error();
         fprintf(stderr , "Error : expected function name after token 'function'\n");
@@ -25,19 +25,19 @@ int parse_func()
         chalk_exit();
     }
     lex();
-    while(token.cur.token != ')') 
+    while(token.cur.token != ')')
     {
         lex();
         switch(token.cur.token)
         {
-            case  ID: 
-                parm_count++; 
+            case  ID:
+                parm_count++;
                 if(debug)fprintf( stderr , "SLV\t%s\n" , token.cur.text );
                 _asm(OP_SLV , new_var( STRING , (var_union)(token.cur.text)));
                 continue;
             case ',':
                 continue;
-            case ')': 
+            case ')':
                 continue;
         }
         parse_error();
@@ -67,7 +67,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
             return 0;
 
         case STRING_VAL:
-            if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(lextext); fprintf( stderr , "\"\n"); } 
+            if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(lextext); fprintf( stderr , "\"\n"); }
             _asm(OP_LSTR , new_var( STRING , (var_union)strdup(lextext)));
             if(is_in(token.nxt.token , "*/-"))
             {
@@ -77,7 +77,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
             }
             return 0;
 
-        case    ID:    
+        case    ID:
             pre_id = id;
             id = strdup(token.cur.text);
             if ( token.nxt.token == '(' ) //Function call
@@ -108,13 +108,17 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                 lex();
                 in_table = 0;
                 char * element_name;
+                if(token.nxt.token != ']')
+                {
+                    parse_expr();
+                /*
                 if( token.nxt.token == ID || token.nxt.token == STRING_VAL || token.nxt.token == INT_VAL )
                 {
                     lex();
                     element_name = strdup(lextext);
-                    if (in_func) 
+                    if (in_func)
                     {
-                    
+
                         if(get_index_in_table(Local , id) == -1 && get_index_in_table(Global , id) == -1)
                         {
                             parse_error();
@@ -127,7 +131,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                     else
                     {
                         if(get_index_in_table(Global , id) == -1)
-                        {   
+                        {
                             parse_error();
                             fprintf( stderr , "name %s is not declared\n" , id );
                             chalk_exit();
@@ -135,9 +139,11 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                         if(debug)fprintf( stderr , "LGV\t%s\n" , id );
                         _asm(OP_LGV , new_var( STRING , (var_union)id));
                     }
-                    id = pre_id;
-                    if(debug)fprintf( stderr , "LSTR\t%s\n" , element_name );
-                    _asm(OP_LSTR , new_var( STRING , (var_union)element_name));
+                    */
+                    //id = pre_id;
+                    element_name = vartostr(*op_pop());
+                    /*if(debug)fprintf( stderr , "LSTR\t%s\n" , element_name );
+                    _asm(OP_LSTR , new_var( STRING , (var_union)element_name));*/
                     if(debug)fprintf( stderr , "LTE\n");
                     _asm(OP_LTE , NULL );
                     lex();
@@ -149,10 +155,10 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                 //parse_expr();
             }
             else     //Normal identifier
-            { 
-                if (in_func) 
+            {
+                if (in_func)
                 {
-                    
+
                     if(get_index_in_table(Local , id) == -1 && get_index_in_table(Global , id) == -1)
                     {
                         parse_error();
@@ -162,7 +168,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                     if(debug)fprintf( stderr , "LLV\t%s\n" , id );
                     _asm(OP_LLV , new_var( STRING , (var_union)strdup(id)));
                 }
-                else 
+                else
                 {
                     if(get_index_in_table(Global , id) == -1)
                     {
@@ -173,27 +179,27 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
                     if(debug)fprintf( stderr , "LGV\t%s\n" , id );
                     _asm(OP_LGV , new_var( STRING , (var_union)id));
                 }
-                id = pre_id; 
+                id = pre_id;
                 if(is_in(token.nxt.token,"*/")) parse_term();
                 return 1;
             }
 
         case '*':
-            parse_term(); 
-            if(debug)fprintf( stderr , "MUL\n");    
+            parse_term();
+            if(debug)fprintf( stderr , "MUL\n");
             _asm(OP_MUL , NULL);
             return 1;
 
         case '/':
-            parse_term(); 
-            if(debug)fprintf( stderr , "DIV\n");    
+            parse_term();
+            if(debug)fprintf( stderr , "DIV\n");
             _asm(OP_DIV , NULL);
             return 1;
 
         case '(':
             if(token.nxt.token == ')')  /* Empty parenthesis */
                 return 0;
-            parse_expr(); 
+            parse_expr();
             if(token.nxt.token != ')')
             {
                 parse_error();
@@ -218,7 +224,7 @@ int parse_term()    /* Matches a mathematical term i.e. it terminates with '+' o
     parse_error();
     printf("expected expression before %s\n" , tokentostring(token.cur) );
     chalk_exit();
-    
+
 }
 
 int parse_expr()
@@ -258,24 +264,24 @@ parse_expr_only:
             if(is_in(token.nxt.token , "+-")) goto parse_expr_only;
             return 0;
 
-        case '>':    
+        case '>':
             lex();
             parse_expr();
-            if(debug)fprintf( stderr , "TGT\n");    
+            if(debug)fprintf( stderr , "TGT\n");
             _asm(OP_TGT , NULL);
             return 0;
 
         case '<':
             lex();
             parse_expr();
-            if(debug)fprintf( stderr , "TLT\n");    
+            if(debug)fprintf( stderr , "TLT\n");
             _asm(OP_TLT , NULL);
             return 0;
 
         case LE:
             lex();
             parse_expr();
-            if(debug)fprintf( stderr , "TLE\n");    
+            if(debug)fprintf( stderr , "TLE\n");
             _asm(OP_TLE , NULL);
             return 0;
 
@@ -283,7 +289,7 @@ parse_expr_only:
             lex();
             lex();
             parse_expr();
-            if(debug)fprintf( stderr , "TGE\n");    
+            if(debug)fprintf( stderr , "TGE\n");
             _asm(OP_TGE , NULL);
             return 0;
 
@@ -298,7 +304,7 @@ parse_expr_only:
             lex();
             lex();
             parse_expr();
-            if(debug)fprintf( stderr , "TNE\n");    
+            if(debug)fprintf( stderr , "TNE\n");
             _asm(OP_TNE , NULL);
             return 0;
         /*
@@ -323,8 +329,8 @@ parse_expr_only:
         lex();
         parse_term();
         if(debug)fprintf( stderr , "SUB\n");
-        _asm(OP_SUB , NULL);    
-        if(is_in(token.nxt.token , "+-")) goto parse_expr_only;  
+        _asm(OP_SUB , NULL);
+        if(is_in(token.nxt.token , "+-")) goto parse_expr_only;
         else if(is_in(token.nxt.token , "*")) parse_expr();
         return 0;
     }
@@ -363,7 +369,7 @@ int parse_table_elements()
     if(token.nxt.token == '}')  return 0;   /* Empty table */
     while(token.nxt.token != '}')
     {
-        if(token.nxt.token == '\n') 
+        if(token.nxt.token == '\n')
         {
             lex();
             continue;
@@ -379,25 +385,25 @@ int parse_table_elements()
                 while(token.nxt.token == '\n')lex();
                 if(token.nxt.token == '}')
                 {
-                    if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(element_name); fprintf( stderr , "\"\n"); } 
+                    if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(element_name); fprintf( stderr , "\"\n"); }
                     _asm(OP_LSTR , new_var( STRING , (var_union)strdup(element_name)));
-                    if(debug)fprintf( stderr , "STE\n");    
+                    if(debug)fprintf( stderr , "STE\n");
                     _asm(OP_STE , new_var( NULL_T , (var_union)(0)));
                     return 0;
                 }
                 else if(token.nxt.token == ',')
                 {
                     lex();
-                    if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(element_name); fprintf( stderr , "\"\n"); } 
+                    if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(element_name); fprintf( stderr , "\"\n"); }
                     _asm(OP_LSTR , new_var( STRING , (var_union)strdup(element_name)));
-                    if(debug)fprintf( stderr , "STE\n");    
+                    if(debug)fprintf( stderr , "STE\n");
                     _asm(OP_STE , new_var( NULL_T , (var_union)(0)));
                     continue;
                 }
             }
-            if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(element_name); fprintf( stderr , "\"\n"); } 
+            if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(element_name); fprintf( stderr , "\"\n"); }
             _asm(OP_LSTR , new_var( STRING , (var_union)strdup(element_name)));
-            if(debug)fprintf( stderr , "STE\n");    
+            if(debug)fprintf( stderr , "STE\n");
             _asm(OP_STE , new_var( NULL_T , (var_union)(0)));
         }
     }
@@ -415,23 +421,23 @@ int parse_statment()
     //printf("TOK = %s\n" , tokentostring(token.cur) );
     switch(token.cur.token)
     {
-        case    LEXEOF:    
+        case    LEXEOF:
             return 0;
 
-        case    '\n':    
+        case    '\n':
             return '\n';
 
-        case    ID:    
+        case    ID:
             pre_id = id;
             id = strdup(lextext);
-            if(token.nxt.token == ASSIGN)  
-            { 
+            if(token.nxt.token == ASSIGN)
+            {
                 lex();
                 char * assign_id = id;
-                if(token.nxt.token == '{')  //Table 
+                if(token.nxt.token == '{')  //Table
                 {
                     lex();
-                    if(debug)fprintf( stderr , "CT\t%s\n" , assign_id ); 
+                    if(debug)fprintf( stderr , "CT\t%s\n" , assign_id );
                     _asm(OP_CT , NULL);
                     parse_table_elements();
                     in_table = 0;
@@ -442,7 +448,7 @@ int parse_statment()
                         chalk_exit();
                     }
                     lex();
-                    if(debug)fprintf( stderr , "LT\t%s\n" , assign_id ); 
+                    if(debug)fprintf( stderr , "LT\t%s\n" , assign_id );
                     _asm(OP_LT , NULL);
                     goto _jmp_out;
                 }
@@ -454,9 +460,9 @@ int parse_statment()
                     _asm(OP_SLV , new_var( STRING , (var_union)assign_id));
                     return 1;
                 }
-                if(debug)fprintf( stderr , "SGV\t%s\n" , assign_id ); 
+                if(debug)fprintf( stderr , "SGV\t%s\n" , assign_id );
                 _asm(OP_SGV , new_var( STRING , (var_union)assign_id));
-                return 1; 
+                return 1;
             }
             else if (token.nxt.token == '(' )
             {
@@ -483,8 +489,8 @@ int parse_statment()
                 return 1;
             }
 
-        case    IF:    
-            //level = max_lvl+1; 
+        case    IF:
+            //level = max_lvl+1;
             in_cond = 1;
             parse_expr();
             if(token.nxt.token != THEN)
@@ -492,11 +498,11 @@ int parse_statment()
                 parse_error();
                 fprintf( stderr , "expected 'then' before %s\n" , tokentostring(token.nxt) );
                 chalk_exit();
-            } 
+            }
             lex();
             in_cond = 0;
             int dummy = chunk_buf_pos;
-            if(debug)fprintf( stderr , "JZ\t%d\n" , 0 );  
+            if(debug)fprintf( stderr , "JZ\t%d\n" , 0 );
             _asm(OP_JZ , new_var( INT , (var_union)(0) ));
             //int cur_pos = pos;
             //int tmp_counting = counting , tmp_debug = debug; debug = 0;
@@ -508,7 +514,7 @@ int parse_statment()
                 parse_error();
                 fprintf( stderr , "expected 'end' before %s\n" , tokentostring(token.cur) );
                 chalk_exit();
-            } 
+            }
             //counting = tmp_counting;
             //debug = tmp_debug;
             int if_block_size = (chunk_buf_pos - dummy)/10 - 1;
@@ -517,30 +523,30 @@ int parse_statment()
             //while(parse(src) != END);
             //inst_count -= if_block_size;
             return 1;
-        case    WHILE:    
-            //level = max_lvl+1; 
-            //if(debug)fprintf( stderr , "w%d:\n", wh_lvl++ ); 
+        case    WHILE:
+            //level = max_lvl+1;
+            //if(debug)fprintf( stderr , "w%d:\n", wh_lvl++ );
             in_cond = 1;
             dummy = chunk_buf_pos;
-            parse_expr(); 
+            parse_expr();
             if(token.nxt.token != DO)
             {
                 parse_error();
                 fprintf( stderr , "expected 'do' before %s\n" , tokentostring(token.nxt) );
                 chalk_exit();
-            } 
+            }
             lex();
             int tdum = chunk_buf_pos;
-            if(debug)fprintf( stderr , "JZ\t%d\n" , 0 );  
+            if(debug)fprintf( stderr , "JZ\t%d\n" , 0 );
             _asm(OP_JZ , new_var( INT , (var_union)(0) ));
             in_cond = 0;
             //tmp_inst_count = inst_count;
             //counting = 1; int tmp_debug = debug; debug = 0;
-            //while(parse(src) != END); 
+            //while(parse(src) != END);
             //counting = 0; debug = tmp_debug;
             //inst_count = tmp_inst_count + 1
             //pos = cur_pos;
-            while(parse_statment()); 
+            while(parse_statment());
             if(token.cur.token != END)
             {
                 parse_error();
@@ -549,18 +555,18 @@ int parse_statment()
             }
             int while_block_size = (chunk_buf_pos - dummy)/10 + 1;
             if(debug)fprintf( stderr , "JMP\t%d\n" , -while_block_size);
-            _asm(OP_JMP , new_var(INT , (var_union)(-while_block_size))); 
+            _asm(OP_JMP , new_var(INT , (var_union)(-while_block_size)));
             int while_size = (chunk_buf_pos - tdum)/10 - 1;
-            memcpy( &chunk_buf[tdum+2] , &while_size , sizeof(int) ); 
-            //if(debug)fprintf( stderr , "%d:\n" , --level); 
+            memcpy( &chunk_buf[tdum+2] , &while_size , sizeof(int) );
+            //if(debug)fprintf( stderr , "%d:\n" , --level);
             return 1;
-        case    FUNC:    
+        case    FUNC:
             in_func = 1;
             dummy = chunk_buf_pos;
             /*cur_pos = pos;
             counting = 1; tmp_debug = debug; debug = 0;
-            parse_func(src); 
-            while(parse(src) != END); 
+            parse_func(src);
+            while(parse(src) != END);
             counting = 0;
             int jmp_v = inst_count - dummy;
             inst_count = dummy;
@@ -571,7 +577,7 @@ int parse_statment()
             if(debug)fprintf( stderr , "LLT\t%d\n" , 0);
             _asm(OP_LLT , new_var(INT , (var_union)(0)));
             //pos = cur_pos;
-            parse_func(); 
+            parse_func();
             while(parse_statment());
             if(token.cur.token != END)
             {
@@ -582,12 +588,12 @@ int parse_statment()
             int func_size = (chunk_buf_pos - dummy)/10;
             memcpy( &chunk_buf[dummy+2] , &func_size , sizeof(int) );
             memcpy( &chunk_buf[dummy+12] , &(Local->count) , sizeof(int) );
-            if(debug)fprintf( stderr , "RET\n"); 
+            if(debug)fprintf( stderr , "RET\n");
             _asm(OP_RET , NULL);
             in_func = 0;
             return 1;
 
-        case RETURN:    
+        case RETURN:
             parse_expr();
             if(debug)fprintf( stderr , "RET\n");
             _asm(OP_RET , NULL);
@@ -626,68 +632,68 @@ int parse_tmp()
                             _asm(OP_PUSH , new_var( DOUBLE , (var_union)atof(lextext)));
                                 return 1;
 
-       	case 		'+':	while(parse(src) > 1); 
+       	case 		'+':	while(parse(src) > 1);
                             if(debug)fprintf( stderr , "ADD\n");
-                            _asm(OP_ADD , NULL);    
+                            _asm(OP_ADD , NULL);
                             return 2;
 
-       	case 		'-':	while(parse(src) > 1); 
-                            if(debug)fprintf( stderr , "SUB\n");	
+       	case 		'-':	while(parse(src) > 1);
+                            if(debug)fprintf( stderr , "SUB\n");
                             _asm(OP_SUB , NULL);
                             return 2;
 
-       	case 		'*':	while(parse(src) > 2); 
-                            if(debug)fprintf( stderr , "MUL\n");	
+       	case 		'*':	while(parse(src) > 2);
+                            if(debug)fprintf( stderr , "MUL\n");
                             _asm(OP_MUL , NULL);
                             return 3;
 
-       	case 		'/':	while(parse(src) > 2); 
-                            if(debug)fprintf( stderr , "DIV\n");	
+       	case 		'/':	while(parse(src) > 2);
+                            if(debug)fprintf( stderr , "DIV\n");
                             _asm(OP_DIV , NULL);
                             return 3;
-        case        '^':    while(parse(src) > 3); 
-                            if(debug)fprintf( stderr , "POW\n");    
+        case        '^':    while(parse(src) > 3);
+                            if(debug)fprintf( stderr , "POW\n");
                             _asm(OP_POW , NULL);
                             return 3;
 
-        case        '>':    while(parse(src) > 1); 
-                            if(debug)fprintf( stderr , "TGT\n");    
+        case        '>':    while(parse(src) > 1);
+                            if(debug)fprintf( stderr , "TGT\n");
                             _asm(OP_TGT , NULL);
                             return 1;
 
-        case        '<':    while(parse(src) > 1); 
-                            if(debug)fprintf( stderr , "TLT\n");    
+        case        '<':    while(parse(src) > 1);
+                            if(debug)fprintf( stderr , "TLT\n");
                             _asm(OP_TLT , NULL);
                             return 2;
 
-        case         LE:    while(parse(src)); 
-                            if(debug)fprintf( stderr , "TLE\n");    
+        case         LE:    while(parse(src));
+                            if(debug)fprintf( stderr , "TLE\n");
                             _asm(OP_TLE , NULL);
                             return 2;
 
-        case         GE:    while(parse(src) > 1); 
-                            if(debug)fprintf( stderr , "TGE\n");    
+        case         GE:    while(parse(src) > 1);
+                            if(debug)fprintf( stderr , "TGE\n");
                             _asm(OP_TGE , NULL);
                             return 2;
 
-        case         EQ:    while(parse(src) > 1); 
+        case         EQ:    while(parse(src) > 1);
                             if(debug)fprintf( stderr , "TEQ\n");
                             _asm(OP_TEQ , NULL);
                             return 2;
 
-        case         NE:    while(parse(src) > 1); 
-                            if(debug)fprintf( stderr , "TNE\n");    
+        case         NE:    while(parse(src) > 1);
+                            if(debug)fprintf( stderr , "TNE\n");
                             _asm(OP_TNE , NULL);
                             return 2;
 
        	case 		'(':	while(parse(src) != ')');	return 0;
        	case 		')':	return ')';
 
-		case 		 ID:	
+		case 		 ID:
 							pre_id = id;
 							id = strdup(lextext);
-							if(lex(src) == ASSIGN)	
-                            { 
+							if(lex(src) == ASSIGN)
+                            {
                                 char * assign_id = id;
                                 while(parse() != 0);
                                 if(in_func)
@@ -696,9 +702,9 @@ int parse_tmp()
                                     _asm(OP_SLV , new_var( STRING , (var_union)assign_id));
                                     return 1;
                                 }
-                                if(debug)fprintf( stderr , "SGV\t%s\n" , assign_id ); 
+                                if(debug)fprintf( stderr , "SGV\t%s\n" , assign_id );
                                 _asm(OP_SGV , new_var( STRING , (var_union)assign_id));
-                                return 1; 
+                                return 1;
                             }
 							else if ( pos=start_pos , lex(src) == '(' )
                             {
@@ -722,9 +728,9 @@ int parse_tmp()
                                 _asm(OP_CALL , new_var( INT , (var_union)(fun_loc - 2)));
                                 return 1;
                             }
-                            else { 
-                                pos = start_pos; 
-                                if (in_func) 
+                            else {
+                                pos = start_pos;
+                                if (in_func)
                                 {
                                     if(debug)fprintf( stderr , "LLV\t%s\n" , id );
                                     _asm(OP_LLV , new_var( STRING , (var_union)id));
@@ -735,7 +741,7 @@ int parse_tmp()
                                         chalk_exit();
                                     }
                                 }
-                                else 
+                                else
                                 {
                                     if(get_index_in_table(Global , id) == -1)
                                     {
@@ -746,16 +752,16 @@ int parse_tmp()
                                     if(debug)fprintf( stderr , "LGV\t%s\n" , id );
                                     _asm(OP_LGV , new_var( STRING , (var_union)id));
                                 }
-                                id = pre_id; 
+                                id = pre_id;
                                 return 1;
                             }
 
-		case STRING_VAL:	if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(lextext); fprintf( stderr , "\"\n"); } 
+		case STRING_VAL:	if(debug){ fprintf( stderr , "LSTR\t\""); print_lstr(lextext); fprintf( stderr , "\"\n"); }
                             _asm(OP_LSTR , new_var( STRING , (var_union)strdup(lextext)));
                             return 1;
 
-        case         IF:    
-                            //level = max_lvl+1; 
+        case         IF:
+                            //level = max_lvl+1;
                             in_cond = 1;
                             int a = parse();
                             while(a != THEN)
@@ -769,49 +775,49 @@ int parse_tmp()
                                     chalk_exit();
                                 }
                                 a = parse();
-                            } 
+                            }
                             in_cond = 0;
                             int dummy = chunk_buf_pos;
-                            if(debug)fprintf( stderr , "JZ\t%d\n" , 0 );  
+                            if(debug)fprintf( stderr , "JZ\t%d\n" , 0 );
                             _asm(OP_JZ , new_var( INT , (var_union)(0) ));
                             //int cur_pos = pos;
                             //int tmp_counting = counting , tmp_debug = debug; debug = 0;
                             //counting = 1;
                             //tmp_inst_count = inst_count;
-                            while(parse(src) != END); 
+                            while(parse(src) != END);
                             //counting = tmp_counting;
                             //debug = tmp_debug;
                             int if_block_size = (chunk_buf_pos - dummy)/10 - 1;
                             memcpy( &chunk_buf[dummy+2] , &if_block_size , sizeof(int));
-                            
+
                             //pos = cur_pos;
                             //while(parse(src) != END);
                             //inst_count -= if_block_size;
                             return 0;
 
-        case      WHILE:    
-                            //level = max_lvl+1; 
-                            //if(debug)fprintf( stderr , "w%d:\n", wh_lvl++ ); 
+        case      WHILE:
+                            //level = max_lvl+1;
+                            //if(debug)fprintf( stderr , "w%d:\n", wh_lvl++ );
                             in_cond = 1;
                             dummy = chunk_buf_pos;
-                            while(parse(src) != DO); 
+                            while(parse(src) != DO);
                             int tdum = chunk_buf_pos;
-                            if(debug)fprintf( stderr , "JZ\t%d\n" , 0 );  
+                            if(debug)fprintf( stderr , "JZ\t%d\n" , 0 );
                             _asm(OP_JZ , new_var( INT , (var_union)(0) ));
                             in_cond = 0;
                             //tmp_inst_count = inst_count;
                             //counting = 1; int tmp_debug = debug; debug = 0;
-                            //while(parse(src) != END); 
+                            //while(parse(src) != END);
                             //counting = 0; debug = tmp_debug;
                             //inst_count = tmp_inst_count + 1
                             //pos = cur_pos;
-                            while(parse(src) != END); 
+                            while(parse(src) != END);
                             int while_block_size = (chunk_buf_pos - dummy)/10 + 1;
                             if(debug)fprintf( stderr , "JMP\t%d\n" , -while_block_size);
-                            _asm(OP_JMP , new_var(INT , (var_union)(-while_block_size))); 
+                            _asm(OP_JMP , new_var(INT , (var_union)(-while_block_size)));
                             int while_size = (chunk_buf_pos - tdum)/10 - 1;
-                            memcpy( &chunk_buf[tdum+2] , &while_size , sizeof(int) ); 
-                            //if(debug)fprintf( stderr , "%d:\n" , --level); 
+                            memcpy( &chunk_buf[tdum+2] , &while_size , sizeof(int) );
+                            //if(debug)fprintf( stderr , "%d:\n" , --level);
                             return 0;
 
         case       THEN:    return THEN;
@@ -821,8 +827,8 @@ int parse_tmp()
                             dummy = chunk_buf_pos;
                             /*cur_pos = pos;
                             counting = 1; tmp_debug = debug; debug = 0;
-                            parse_func(src); 
-                            while(parse(src) != END); 
+                            parse_func(src);
+                            while(parse(src) != END);
                             counting = 0;
                             int jmp_v = inst_count - dummy;
                             inst_count = dummy;
@@ -833,12 +839,12 @@ int parse_tmp()
                             if(debug)fprintf( stderr , "LLT\t%d\n" , 0);
                             _asm(OP_LLT , new_var(INT , (var_union)(0)));
                             //pos = cur_pos;
-                            parse_func(src); 
-                            while(parse(src) != END); 
+                            parse_func(src);
+                            while(parse(src) != END);
                             int func_size = (chunk_buf_pos - dummy)/10;
                             memcpy( &chunk_buf[dummy+2] , &func_size , sizeof(int) );
                             memcpy( &chunk_buf[dummy+12] , &(Local->count) , sizeof(int) );
-                            if(debug)fprintf( stderr , "RET\n"); 
+                            if(debug)fprintf( stderr , "RET\n");
                             _asm(OP_RET , NULL);
                             in_func = 0;
                             return 0;
@@ -851,6 +857,11 @@ int parse_tmp()
     return 0;
 }
 
+#define IS_EXPR_START(tok)(token.nxt.token == INT_VAL || DOUBLE_VAL || STRING_VAL || ID || '(' )
+
+extern void vm_op_capi();
+extern int vm_set_call();
+
 int parse()
 {
     token.pre.token = 0;
@@ -862,7 +873,7 @@ int parse()
 /*
 int main(int argc , char * argv[])
 {
-    if(argc < 2 || argc > 4) 
+    if(argc < 2 || argc > 4)
     {
         fprintf( stderr , "usage : %s [-d debug_level] filename\n" , argv[0] );
         chalk_exit();
@@ -909,10 +920,10 @@ int main(int argc , char * argv[])
 }
 */
 
-typedef struct 
+typedef struct
 {
     char * src ;
-    int globals_count ; 
+    int globals_count ;
     element_table_t * strings ;
     table_t * globals ; /* Optional debug data*/
     int inst_count;
@@ -920,14 +931,14 @@ typedef struct
 
 parse_return parse_file(char * filename)
 {
-    
+
     input_file_name = filename;
     src = open_file(filename);
     init_int();
     //while(pos < strlen(src))
         parse();
     _asm(OP_HALT , new_var(NULL_T , (var_union)(0)));
-    parse_return ret = 
+    parse_return ret =
     {
         .src = chunk_buf ,
         .globals_count = Global->count ,

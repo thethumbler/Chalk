@@ -40,6 +40,7 @@ void api_write(void)
 	char * filename = op_pop()->val.char_t;
 	FILE * out = fopen( filename , "w" );
 	fwrite( str , strlen(str) , 1 , out);
+	fwrite( "\0", 1 , 1 , out);
 	fclose( out );
 }
 

@@ -3,14 +3,14 @@
 #include "runtime.c"
 #include "repl.c"
 
-#define CHALK_VERSION "Chalk VM version : 0.0.1 (Alpha)"
+#define CHALK_VERSION "Chalk VM version : 0.0.1 (Pre-Alpha)"
 
 void print_message () {
   	fprintf(stderr,
   	"usage: chalk filename [options].  Available options are:\n"
   	"  -c [file]  compile only\n"
   	"  -o [file]  specify output file (default chalk.out)\n"
-  	"  -i       	interactive shell\n" 
+  	"  -i       	interactive shell (Not fully implemented)\n" 
   	"  -v       	print version information\n" 
 	);
   	chalk_exit();
@@ -67,7 +67,10 @@ int main(int argc , char * argv[])
     	fclose(in);
     	if(check_header(src))
     	{
-    		launch_exec(open_file(input));
+            char * in_file = open_file(input);
+    		launch_exec(in_file);
+            terminate_exec();
+            free(in_file);
     		chalk_exit();
     	}
     }

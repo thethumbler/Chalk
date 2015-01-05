@@ -1,11 +1,13 @@
-
-print("A"  + 5 + 6 + "B\n")
-
 table = {
-	1 = "This is element one!" ,
-	name = "Mohamed"	,
-	"age" = 18
+	e0 = "This is element one!" ,
+	e1 = "Mohamed"	,
+	e2 = 18
 }
 
-x = open("test.chk")
-print(x + "\n")
+i = 0
+
+while (i<3) do
+    print(table[ "e" + i ])
+    print("\n")
+    i = i + 1
+end

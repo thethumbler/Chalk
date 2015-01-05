@@ -2,8 +2,11 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
+typedef char flag;
 
-int debug = 0;
+flag debug = 0;
+flag PARSE_ERROR_FLAG = 0;
+flag IN_REPL = 0; 
 
 #include <stdint.h>
 #include <stdio.h>
@@ -12,6 +15,7 @@ int debug = 0;
 void chalk_exit()
 {
 	//_free_alloc();
+    if(IN_REPL) repl_loop();
 	exit(0);
 }
 

@@ -25,3 +25,7 @@ OP_LGV	,	/* Load a value from the Global table and push it on the stack */
 OP_SLV	,	/* Pop a value and save it into variable in the Local table */
 OP_LLV	,	/* Load a value from the Local table and push it on the stack */
 OP_LLT		/* Construct a local table with the given elements count */
+OP_CT   ,   /* Constructs a table with a variable elements count as cur_table  */
+OP_LT   ,   /* Pushes cur_table to the stack */
+OP_LTE  ,   /* Load table element : Pops element name from the stack .. then fetches it from cur_table */
+OP_STE  ,   /* Set table element  : Pops element name then element value and adds it to cur_table */

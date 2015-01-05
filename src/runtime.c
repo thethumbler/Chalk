@@ -34,7 +34,11 @@ void push_local_table(element_table_t * table)
 
 void pop_local_table()
 {
+	Local_tables_t * tmp = L_Head;
 	L_Head = L_Head->pre_tbl;
+	free(tmp->Local->var);
+	free(tmp->Local);
+	free(tmp);
 }
 
 char * input;
@@ -237,7 +241,7 @@ void vm_op_ste(void)
 	add_to_table(cur_table , var);
 }
 
-void vm_set_call(int api_fun_id)	//used for native code generation
+int vm_set_call(int api_fun_id)	//used for native code generation
 {
 	tmp.val.int_t = api_fun_id;
 }
@@ -376,6 +380,20 @@ int launch_exec(char * src)
 	build_strings_table();
 	exec( input + 12 , RT_Strings);
 	return 0;
+}
+
+int terminate_exec()
+{
+	free(RT_Global->var);
+	free(RT_Global);
+	if(L_Head)free(L_Head);
+	int i;
+	/* Deallocating strings table */
+	for(i=0;i<RT_Strings->count;i++)
+		free(RT_Strings->var[i].val.char_t);
+	
+	free(RT_Strings->var);
+	free(RT_Strings);
 }
 
 /*
