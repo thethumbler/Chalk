@@ -2,7 +2,7 @@ CHALK
 =====
 
 ####a light-weight programming language made mainly for learning purposes  
-#####THIS LANGUAGE WORKS ONLY ON 64-BIT SYSTEMS !!
+#####THIS LANGUAGE WORKS ONLY ON 64-BIT SYSTEMS (GUARANTEED TO WORK ON LINUX ONLY)  !!
 .....................................
 
 
