@@ -10,7 +10,7 @@ CHALK
 >Ok .. I was bored so I decided to make a simple programming language just for fun
 >So here it's .. and it's called chalk .. which I love for it's sound and colors.
 
-Language is still in designing phase ... that means the way you write in some code may change in the feautre 
+Language is still in designing phase ... that means the way you write in some code may change in the future 
 
 ######Features :-
 ```
